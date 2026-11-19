@@ -9,7 +9,11 @@ help: ## Tampilkan daftar perintah
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
 
 ## ---------- Development ----------
-.PHONY: run dev build tidy fmt
+.PHONY: init run dev build tidy fmt
+init: ## Sesuaikan nama app setelah gonew (opsional: name=shop-api)
+	go run ./scripts/initproject $(if $(name),-name $(name))
+	@test -f .env || (cp .env.example .env && echo ".env dibuat dari .env.example")
+
 run: ## Jalankan API
 	go run ./cmd/api
 

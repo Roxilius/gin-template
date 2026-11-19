@@ -50,22 +50,25 @@ go install golang.org/x/tools/cmd/gonew@latest
 
 gonew github.com/Roxilius/gin-template github.com/Roxilius/project-baru
 cd project-baru
+make init                           # PowerShell: ./scripts/dev.ps1 init
 ```
 
-> `gonew` mengunduh template dari repo [github.com/Roxilius/gin-template](https://github.com/Roxilius/gin-template), jadi repo itu harus sudah di-push. Jika repo-nya private, set dulu `go env -w GOPRIVATE=github.com/Roxilius/*`.
+- `gonew` menyalin template dan mengganti module path di `go.mod` serta semua import.
+- `init` mengganti sisanya secara otomatis: `APP_NAME`, judul Swagger, contoh nilai di dokumentasi Swagger, dan judul README. Nama diambil dari module path (`project-baru` → judul `Project Baru API`). Jika belum ada, `.env` dibuat dari `.env.example`. Untuk nama lain: `make init name=shop-api` / `./scripts/dev.ps1 init shop-api`, atau `go run ./scripts/initproject -name shop-api -title "Shop API"`.
+
+> `gonew` mengunduh template dari repo [github.com/Roxilius/gin-template](https://github.com/Roxilius/gin-template), jadi perubahan template harus sudah di-push. Tepat setelah push, gunakan `gonew github.com/Roxilius/gin-template@main ...` agar tidak mendapat versi lama dari cache module proxy. Jika repo-nya private, set dulu `go env -w GOPRIVATE=github.com/Roxilius/*`.
 
 ### Cara 2: Copy manual
 
 1. Salin folder ini, lalu hapus folder `.git` di dalamnya.
-2. *Find & replace* `github.com/Roxilius/gin-template` menjadi module path baru di semua file (`.go`, `go.mod`, `.golangci.yml`).
-3. Jalankan `go mod tidy`.
+2. Ganti module path: `go mod edit -module github.com/Roxilius/project-baru`, lalu *find & replace* `github.com/Roxilius/gin-template` di semua file `.go`.
+3. Jalankan `make init` / `./scripts/dev.ps1 init`, lalu `go mod tidy`.
 
 ### Setelah project dibuat
 
-- Ganti `github.com/Roxilius/gin-template` di [.golangci.yml](.golangci.yml) (`gonew` hanya mengganti `go.mod` dan import Go, bukan file konfigurasi).
-- Ganti `APP_NAME` di `.env.example`.
-- Ganti `@title` dan `@description` Swagger di [cmd/api/main.go](cmd/api/main.go), lalu jalankan `make swag`.
-- Ganti nama image di [.github/workflows/ci.yml](.github/workflows/ci.yml).
+Yang tidak bisa diotomatisasi: sesuaikan `@description` Swagger di [cmd/api/main.go](cmd/api/main.go) dan isi README sesuai project, lalu buat repo Git baru. Folder `scripts/initproject` boleh dihapus setelah `init` dijalankan.
+
+Tidak perlu mengubah [.golangci.yml](.golangci.yml) dan [.github/workflows/ci.yml](.github/workflows/ci.yml), karena keduanya tidak menyimpan nama project. `gci` membaca module dari `go.mod`, dan image CI diberi tag generik.
 
 ---
 

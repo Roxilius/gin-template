@@ -25,6 +25,9 @@ function Invoke-Step([string]$Command) {
 }
 
 $tasks = [ordered]@{
+    'init'            = @{ Desc = 'Sesuaikan nama app setelah gonew (arg: nama, opsional)'; Run = {
+            if ($Arg) { Invoke-Step "go run ./scripts/initproject -name $Arg" } else { Invoke-Step 'go run ./scripts/initproject' }
+            if (-not (Test-Path .env)) { Copy-Item .env.example .env; Write-Host '.env dibuat dari .env.example' -ForegroundColor Green } } }
     'run'             = @{ Desc = 'Jalankan API';                                 Run = { Invoke-Step 'go run ./cmd/api' } }
     'dev'             = @{ Desc = 'Jalankan API dengan hot reload (air)';         Run = {
             if (-not (Get-Command air -ErrorAction SilentlyContinue)) {

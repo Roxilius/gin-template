@@ -60,4 +60,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build image
-        run: docker build -t gin-template:ci .
+        # Image hanya dibangun untuk memastikan Dockerfile valid (tidak di-push),
+        # jadi nama tag-nya generik dan tidak perlu diganti per project.
+        run: docker build -t app:ci .

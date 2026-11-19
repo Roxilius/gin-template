@@ -18,12 +18,23 @@ linters:
     rules:
       - path: _test\.go
         linters: [gosec]
+      # Tool development lokal: path file berasal dari daftar tetap di kode,
+      # bukan dari input pengguna.
+      - path: scripts/initproject/
+        linters: [gosec]
+        text: "G304|G703"
 
 formatters:
   enable:
     - gofmt
     - goimports
+    - gci
   settings:
-    goimports:
-      local-prefixes:
-        - github.com/Roxilius/gin-template
+    gci:
+      # Urutan import: standard library, pihak ketiga, lalu package project ini.
+      # "localmodule" membaca nama module dari go.mod, jadi tidak perlu diganti
+      # saat template disalin ke project baru.
+      sections:
+        - standard
+        - default
+        - localmodule
