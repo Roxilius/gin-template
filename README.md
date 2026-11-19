@@ -49,11 +49,11 @@ Cukup tentukan **nama folder** project baru. Tidak perlu clone repo, tidak perlu
 # 1. Pindah ke folder tempat project akan dibuat
 cd ~/projects                       # PowerShell: cd C:\path\ke\folder-project
 
-# 2. Buat project baru. Ganti "shop-api" dengan nama project kamu.
-go run github.com/Roxilius/gin-template/scripts/initproject@main shop-api
+# 2. Buat project baru
+go run github.com/Roxilius/gin-template/scripts/initproject@main new-project
 
 # 3. Masuk ke project baru
-cd shop-api
+cd new-project
 
 # 4. Jalankan PostgreSQL (butuh Docker Desktop)
 make db-up                          # PowerShell: ./scripts/dev.ps1 db-up
@@ -64,13 +64,22 @@ make run                            # PowerShell: ./scripts/dev.ps1 run
 
 Buka http://localhost:8080/swagger untuk melihat dokumentasi API.
 
-Di perintah langkah 2, hanya **`shop-api`** (nama folder project barumu) yang diganti. Bagian `github.com/Roxilius/gin-template/...@main` adalah alamat template ini dan **selalu sama**.
+Ganti **`new-project`** dengan nama project kamu. Contoh, untuk project bernama `shop-api`:
+
+```bash
+go run github.com/Roxilius/gin-template/scripts/initproject@main shop-api
+cd shop-api
+```
+
+Bagian `github.com/Roxilius/gin-template/scripts/initproject@main` adalah alamat template ini dan **selalu sama**, jadi jangan diganti.
 
 > **Tanpa Docker?** Pakai PostgreSQL yang sudah ter-install di laptop. Lewati langkah 4, lalu sesuaikan `DB_USER`, `DB_PASSWORD`, dan `DB_NAME` di file `.env` sebelum langkah 5. Aplikasi langsung berhenti jika tidak bisa terhubung ke database.
 
 > **Pengguna Windows:** jika muncul error *"running scripts is disabled on this system"*, jalankan sekali `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 
 ### Apa yang dilakukan perintah langkah 2
+
+Contoh di bawah memakai nama project `shop-api`.
 
 1. Mengunduh versi terbaru template, lalu menyalinnya ke folder baru `shop-api/`. Isinya bersih: tanpa `.git`, `.env`, atau file build.
 2. Memakai nama folder sebagai nama project:
