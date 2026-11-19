@@ -1,0 +1,21 @@
+# Binaries & build output
+bin/
+tmp/
+*.exe
+*.test
+
+# Coverage
+coverage.out
+coverage.html
+
+# Environment (berisi secret, jangan di-commit)
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db

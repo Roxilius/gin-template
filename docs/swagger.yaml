@@ -1,0 +1,110 @@
+basePath: /
+definitions:
+  handler.HealthResponse:
+    properties:
+      app:
+        example: gin-template
+        type: string
+      checks:
+        additionalProperties:
+          type: string
+        type: object
+      duration:
+        example: 1.2ms
+        type: string
+      status:
+        example: ok
+        type: string
+      time:
+        type: string
+    type: object
+  response.Body:
+    properties:
+      data: {}
+      errors:
+        additionalProperties:
+          type: string
+        type: object
+      message:
+        type: string
+      meta: {}
+      success:
+        type: boolean
+    type: object
+info:
+  contact: {}
+  description: Template REST API berbasis Gin + GORM + PostgreSQL.
+  title: Gin Template API
+  version: "1.0"
+paths:
+  /api/v1/ping:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Body'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+      summary: Test endpoint
+      tags:
+      - health
+  /health:
+    get:
+      description: Mengecek proses aplikasi hidup. Tidak mengecek dependency.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Body'
+            - properties:
+                data:
+                  $ref: '#/definitions/handler.HealthResponse'
+              type: object
+      summary: Liveness probe
+      tags:
+      - health
+  /ready:
+    get:
+      description: Mengecek aplikasi siap menerima traffic, termasuk koneksi database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Body'
+            - properties:
+                data:
+                  $ref: '#/definitions/handler.HealthResponse'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Body'
+            - properties:
+                data:
+                  $ref: '#/definitions/handler.HealthResponse'
+              type: object
+      summary: Readiness probe
+      tags:
+      - health
+securityDefinitions:
+  BearerAuth:
+    description: 'Format: "Bearer <token>"'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
