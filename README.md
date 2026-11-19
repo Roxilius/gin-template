@@ -62,6 +62,7 @@ cd project-baru
 
 ### Setelah project dibuat
 
+- Ganti `github.com/Roxilius/gin-template` di [.golangci.yml](.golangci.yml) (`gonew` hanya mengganti `go.mod` dan import Go, bukan file konfigurasi).
 - Ganti `APP_NAME` di `.env.example`.
 - Ganti `@title` dan `@description` Swagger di [cmd/api/main.go](cmd/api/main.go), lalu jalankan `make swag`.
 - Ganti nama image di [.github/workflows/ci.yml](.github/workflows/ci.yml).
