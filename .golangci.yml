@@ -18,11 +18,11 @@ linters:
     rules:
       - path: _test\.go
         linters: [gosec]
-      # Tool development lokal: path file berasal dari daftar tetap di kode,
-      # bukan dari input pengguna.
+      # Tool development yang dijalankan developer sendiri: path/argumen berasal
+      # dari flag miliknya, dan folder project memang dibuat 0755 seperti biasa.
       - path: scripts/initproject/
         linters: [gosec]
-        text: "G304|G703"
+        text: "G204|G301|G304|G703"
 
 formatters:
   enable:

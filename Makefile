@@ -10,9 +10,8 @@ help: ## Tampilkan daftar perintah
 
 ## ---------- Development ----------
 .PHONY: init run dev build tidy fmt
-init: ## Sesuaikan nama app setelah gonew (opsional: name=shop-api)
-	go run ./scripts/initproject $(if $(name),-name $(name))
-	@test -f .env || (cp .env.example .env && echo ".env dibuat dari .env.example")
+init: ## Sesuaikan nama project hasil salinan template
+	go run ./scripts/initproject
 
 run: ## Jalankan API
 	go run ./cmd/api

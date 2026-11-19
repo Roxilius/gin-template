@@ -41,34 +41,75 @@ Template ini sengaja **tidak berisi fitur bisnis atau entity apa pun**. Isinya h
 
 ## Membuat project baru dari template ini
 
-### Cara 1: `gonew` (direkomendasikan)
+Cukup tentukan **nama folder** project baru. Tidak perlu clone repo, tidak perlu akun GitHub, dan tidak perlu tool tambahan selain Go.
 
-`gonew` menyalin template dan otomatis mengganti nama module di `go.mod` serta di semua import.
+### Langkah
 
 ```bash
-go install golang.org/x/tools/cmd/gonew@latest
+# 1. Pindah ke folder tempat project akan dibuat
+cd ~/projects                       # PowerShell: cd C:\path\ke\folder-project
 
-gonew github.com/Roxilius/gin-template github.com/Roxilius/project-baru
-cd project-baru
-make init                           # PowerShell: ./scripts/dev.ps1 init
+# 2. Buat project baru. Ganti "shop-api" dengan nama project kamu.
+go run github.com/Roxilius/gin-template/scripts/initproject@main shop-api
+
+# 3. Masuk ke project baru
+cd shop-api
+
+# 4. Jalankan PostgreSQL (butuh Docker Desktop)
+make db-up                          # PowerShell: ./scripts/dev.ps1 db-up
+
+# 5. Jalankan API
+make run                            # PowerShell: ./scripts/dev.ps1 run
 ```
 
-- `gonew` menyalin template dan mengganti module path di `go.mod` serta semua import.
-- `init` mengganti sisanya secara otomatis: `APP_NAME`, judul Swagger, contoh nilai di dokumentasi Swagger, dan judul README. Nama diambil dari module path (`project-baru` → judul `Project Baru API`). Jika belum ada, `.env` dibuat dari `.env.example`. Untuk nama lain: `make init name=shop-api` / `./scripts/dev.ps1 init shop-api`, atau `go run ./scripts/initproject -name shop-api -title "Shop API"`.
+Buka http://localhost:8080/swagger untuk melihat dokumentasi API.
 
-> `gonew` mengunduh template dari repo [github.com/Roxilius/gin-template](https://github.com/Roxilius/gin-template), jadi perubahan template harus sudah di-push. Tepat setelah push, gunakan `gonew github.com/Roxilius/gin-template@main ...` agar tidak mendapat versi lama dari cache module proxy. Jika repo-nya private, set dulu `go env -w GOPRIVATE=github.com/Roxilius/*`.
+Di perintah langkah 2, hanya **`shop-api`** (nama folder project barumu) yang diganti. Bagian `github.com/Roxilius/gin-template/...@main` adalah alamat template ini dan **selalu sama**.
 
-### Cara 2: Copy manual
+> **Tanpa Docker?** Pakai PostgreSQL yang sudah ter-install di laptop. Lewati langkah 4, lalu sesuaikan `DB_USER`, `DB_PASSWORD`, dan `DB_NAME` di file `.env` sebelum langkah 5. Aplikasi langsung berhenti jika tidak bisa terhubung ke database.
 
-1. Salin folder ini, lalu hapus folder `.git` di dalamnya.
-2. Ganti module path: `go mod edit -module github.com/Roxilius/project-baru`, lalu *find & replace* `github.com/Roxilius/gin-template` di semua file `.go`.
-3. Jalankan `make init` / `./scripts/dev.ps1 init`, lalu `go mod tidy`.
+> **Pengguna Windows:** jika muncul error *"running scripts is disabled on this system"*, jalankan sekali `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
+
+### Apa yang dilakukan perintah langkah 2
+
+1. Mengunduh versi terbaru template, lalu menyalinnya ke folder baru `shop-api/`. Isinya bersih: tanpa `.git`, `.env`, atau file build.
+2. Memakai nama folder sebagai nama project:
+   - module di `go.mod` dan semua import → `shop-api`
+   - `APP_NAME` → `shop-api`
+   - judul Swagger dan README → `Shop API`
+3. Membuat file `.env` dari `.env.example`.
+
+Nama folder hanya boleh berisi huruf, angka, `-`, `_`, dan `.` (tanpa spasi). Perintah ini menolak jika folder tujuan sudah ada dan berisi file.
+
+Opsi tambahan (taruh **sebelum** nama folder):
+
+| Opsi | Contoh | Fungsi |
+|---|---|---|
+| `-title` | `-title "Toko Kita API"` | Judul Swagger selain yang dibuat otomatis dari nama folder |
+| `-name` | `-name toko` | `APP_NAME` yang berbeda dari nama folder |
+| `-module` | `-module github.com/nama/shop-api` | Module path lengkap, jika project ini nanti mau di-import oleh project Go lain |
+
+### Hot reload (opsional)
+
+Agar API otomatis restart setiap file disimpan, install `air` sekali, lalu pakai `dev`, bukan `run`:
+
+```bash
+go install github.com/air-verse/air@latest
+make dev                            # PowerShell: ./scripts/dev.ps1 dev
+```
 
 ### Setelah project dibuat
 
-Yang tidak bisa diotomatisasi: sesuaikan `@description` Swagger di [cmd/api/main.go](cmd/api/main.go) dan isi README sesuai project, lalu buat repo Git baru. Folder `scripts/initproject` boleh dihapus setelah `init` dijalankan.
+- Sesuaikan `@description` Swagger di [cmd/api/main.go](cmd/api/main.go) dan isi README sesuai project.
+- Folder `scripts/initproject` boleh dihapus, karena hanya dipakai saat membuat project.
+- Project yang sudah dibuat **tidak ikut berubah** jika template ini diperbarui. Hanya project baru yang mendapat versi terbaru.
 
-Tidak perlu mengubah [.golangci.yml](.golangci.yml) dan [.github/workflows/ci.yml](.github/workflows/ci.yml), karena keduanya tidak menyimpan nama project. `gci` membaca module dari `go.mod`, dan image CI diberi tag generik.
+### Cara lain: salin manual
+
+Jika sudah punya salinan folder template, misalnya dari `git clone` atau file ZIP:
+
+1. Ganti nama foldernya menjadi nama project, misalnya `shop-api`, lalu hapus folder `.git` di dalamnya jika ada.
+2. Dari dalam folder itu, jalankan `make init` / `./scripts/dev.ps1 init`. Hasilnya sama dengan perintah di atas.
 
 ---
 
@@ -187,6 +228,7 @@ Contoh `/ready`:
 
 | Make | PowerShell | Fungsi |
 |---|---|---|
+| `make init` | `./scripts/dev.ps1 init` | Sesuaikan nama project hasil salinan manual template |
 | `make run` | `./scripts/dev.ps1 run` | Jalankan API |
 | `make dev` | `./scripts/dev.ps1 dev` | Jalankan dengan hot reload (air) |
 | `make build` | `./scripts/dev.ps1 build` | Build binary ke `./bin` |
